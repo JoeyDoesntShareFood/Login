@@ -6,6 +6,8 @@
     android:gravity="center_horizontal"
     android:id="@+id/root"
     android:orientation="vertical"
+    android:padding="16dp"
+    android:background="@color/loginBG"
     tools:context=".RegistrationActivity">
 
     <!-- Login progress -->
