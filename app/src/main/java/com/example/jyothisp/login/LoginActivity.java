@@ -23,6 +23,7 @@ import android.widget.Toast;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
@@ -36,6 +37,7 @@ public class LoginActivity extends AppCompatActivity {
     private TextView mProgressTextView;
     private TextView mRemarksView;
     private View mLoginFormView;
+    private AnimatedVectorDrawableCompat avd;
 
 
     private FirebaseAuth mAuth;
@@ -46,6 +48,7 @@ public class LoginActivity extends AppCompatActivity {
     private static final String LOG_TAG = "LoginActivity";
     private static final String ACTIVITY_MODE = "ACTIVITY_MODE";
     private static final boolean ACTIVITY_EMAIL_CREATE = true;
+    private Boolean isLoading = true;
     private static final boolean ACTIVITY_REGISTER = false;
 
 
@@ -56,8 +59,7 @@ public class LoginActivity extends AppCompatActivity {
 
 
         mLoginFormView = findViewById(R.id.login_form);
-        mProgressView = (ImageView) findViewById(R.id.progress);
-        mProgressTextView = (TextView) findViewById(R.id.text_progress);
+        mProgressView = (ImageView) findViewById(R.id.logo);
         mEmailEditText = (EditText) findViewById(R.id.email);
         mPasswordEditText = (EditText) findViewById(R.id.password);
         mRemarksView = (TextView) findViewById(R.id.remarks);
@@ -67,6 +69,23 @@ public class LoginActivity extends AppCompatActivity {
 
         mAuth = FirebaseAuth.getInstance();
 
+
+
+
+        mProgressView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showProgress(true);
+            }
+        });
+
+        mProgressView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                showProgress(false);
+                return true;
+            }
+        });
 
         /**
          * Setting up new Email Registration.
@@ -94,11 +113,10 @@ public class LoginActivity extends AppCompatActivity {
         });
 
 
-
     }
 
 
-    private void attempSignIn(){
+    private void attempSignIn() {
         mEmailEditText.setError(null);
         mPasswordEditText.setError(null);
 
@@ -109,8 +127,6 @@ public class LoginActivity extends AppCompatActivity {
         View focusView = null;
 
         mRemarksView.setText("");
-
-
 
 
         // Check for a valid email address.
@@ -125,7 +141,7 @@ public class LoginActivity extends AppCompatActivity {
         }
 
         // Check for a valid password, if the user entered one.
-        if (password.equals("") ) {
+        if (password.equals("")) {
             mPasswordEditText.setError(getString(R.string.error_invalid_password));
             focusView = mPasswordEditText;
             cancel = true;
@@ -137,6 +153,7 @@ public class LoginActivity extends AppCompatActivity {
             focusView.requestFocus();
         } else {
 
+            showProgress(true);
             signInWithEmail(email, password);
 
         }
@@ -146,60 +163,64 @@ public class LoginActivity extends AppCompatActivity {
 
     /**
      * Signs in with email
-     * @param email Email ID
+     *
+     * @param email    Email ID
      * @param password Password
      */
-    private void signInWithEmail(String email, String password){
+    private void signInWithEmail(String email, String password) {
         final FirebaseAuth mAuth = FirebaseAuth.getInstance();
         mAuth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()){
+                        if (task.isSuccessful()) {
                             setResult(RESULT_OK);
                             finish();
                         } else {
+                            showProgress(false);
                             Log.d(LOG_TAG, "signInWithEmail: Sign In Failed");
                             String signInFailed = "Incorrect username or password.";
-                            mRemarksView.setText(signInFailed);
                         }
                     }
-                });
+                }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+
+                String signInFailed = e.getLocalizedMessage();
+                mRemarksView.setText(signInFailed);
+            }
+        });
     }
 
 
     /**
      * Shows the progress UI and hides the login form.
+     *
      * @param show boolean dictating whether or not the progress animation should be shown.
      */
     private void showProgress(final boolean show) {
         int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
-        mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
-        mLoginFormView.animate().setDuration(shortAnimTime).alpha(
-                show ? 0 : 1).setListener(new AnimatorListenerAdapter() {
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
-            }
-        });
-        mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
-        mProgressTextView.setVisibility(show ? View.VISIBLE : View.GONE);
-        if (show){
-            AnimatedVectorDrawableCompat avd = AnimatedVectorDrawableCompat.create(this, R.drawable.logo_loading_vector);
-            mProgressView.setImageDrawable(avd);
-            final Animatable animatable = (Animatable) mProgressView.getDrawable();
+
+        avd = AnimatedVectorDrawableCompat.create(this, R.drawable.logo_loading_vector_white);
+        mProgressView.setImageDrawable(avd);
+
+        final Animatable animatable = (Animatable) mProgressView.getDrawable();
+        if (show) {
             animatable.start();
             avd.registerAnimationCallback(new Animatable2Compat.AnimationCallback() {
                 @Override
                 public void onAnimationEnd(Drawable drawable) {
                     if (show)
                         animatable.start();
-                    else {
-                        mProgressView.setVisibility(View.GONE);
-                        mProgressTextView.setVisibility(View.GONE);
-                    }
+                    else
+                        animatable.stop();
                 }
             });
+        } else{
+            animatable.stop();
+            avd.clearAnimationCallbacks();
+            avd = AnimatedVectorDrawableCompat.create(this, R.drawable.logo_loading_vector_white);
+            mProgressView.setImageDrawable(avd);
         }
 
 
@@ -226,7 +247,14 @@ public class LoginActivity extends AppCompatActivity {
 
         }
 
+    }
 
+
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        setResult(RESULT_CANCELED);
     }
 
 

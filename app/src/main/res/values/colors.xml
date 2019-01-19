@@ -1,9 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#3F51B5</color>
-    <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorPrimary">#3E474B</color>
+    <color name="colorPrimaryDark">#212026</color>
     <!--<color name="colorAccent">#FF4081</color>-->
-    <color name="colorAccent">#FFFFFF</color>
+    <color name="colorAccent">#54A74B</color>
+    <!--<color name="colorAccent">#FFFFFF</color>-->
     <!--<color name="loginBG">#FFFFFF</color>-->
-    <color name="loginBG">#252525</color>
+    <color name="loginBG">#303036</color>
+
+    <color name="textColor">#FFFFFF</color>
+    <color name="textColorHint">@android:color/darker_gray</color>
 </resources>

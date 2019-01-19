@@ -7,7 +7,7 @@
     android:id="@+id/root"
     android:orientation="vertical"
     android:padding="16dp"
-    android:background="@color/loginBG"
+    android:background="#303036"
     tools:context=".RegistrationActivity">
 
     <!-- Login progress -->
@@ -53,6 +53,7 @@
                 android:layout_height="wrap_content"
                 android:hint="@string/prompt_email"
                 android:inputType="textEmailAddress"
+                style="@style/regFormStyle"
                 android:maxLines="1"
                 android:singleLine="true" />
 
@@ -62,18 +63,22 @@
                 android:layout_height="wrap_content"
                 android:hint="@string/prompt_name"
                 android:inputType="textPersonName"
+
+                style="@style/regFormStyle"
                 android:maxLines="1"
                 android:singleLine="true" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp">
+                android:layout_margin="16dp">
 
                 <TextView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
+                    android:layout_marginEnd="16dp"
+                    android:layout_gravity="center_vertical"
                     android:text="@string/gender" />
 
                 <RadioGroup
@@ -89,12 +94,14 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
+                        android:textColor="@color/textColor"
                         android:checked="true"
                         android:text="@string/male" />
 
                     <RadioButton
                         android:id="@+id/f_chkbx"
                         android:layout_width="0dp"
+                        android:textColor="@color/textColor"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:text="@string/female" />
@@ -110,6 +117,8 @@
                 android:hint="@string/prompt_phone"
                 android:inputType="phone"
                 android:maxLines="1"
+
+                style="@style/regFormStyle"
                 android:singleLine="true" />
             <EditText
                 android:id="@+id/institute"
@@ -117,6 +126,8 @@
                 android:layout_height="wrap_content"
                 android:hint="@string/prompt_institute"
                 android:inputType="textPersonName"
+
+                style="@style/regFormStyle"
                 android:maxLines="1"
                 android:singleLine="true" />
 
@@ -129,16 +140,18 @@
                 android:imeActionLabel="@string/action_sign_in_short"
                 android:imeOptions="actionUnspecified"
                 android:inputType="textPassword"
+
+                style="@style/regFormStyle"
                 android:maxLines="1"
                 android:singleLine="true" />
 
 
             <Button
                 android:id="@+id/email_sign_in_button"
-                style="?android:textAppearanceSmall"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
+                android:layout_margin="16dp"
+                android:background="@drawable/reg_form_btn_bg"
                 android:text="@string/action_sign_in"
                 android:textStyle="bold" />
 

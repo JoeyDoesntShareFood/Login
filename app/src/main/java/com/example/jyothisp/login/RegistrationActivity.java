@@ -276,7 +276,7 @@ public class RegistrationActivity extends AppCompatActivity {
                     firebaseUser = mAuth.getCurrentUser();
 
                     //Pushing to DB
-                    mProgressTextView.setText("Pushing to DB");
+                    mProgressTextView.setText("Creating account.");
                     pushToDBandExit(dhishnaUser);
                 } else {
                     // If sign in fails, display a message to the user.
@@ -329,7 +329,7 @@ public class RegistrationActivity extends AppCompatActivity {
         mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
         mProgressTextView.setVisibility(show ? View.VISIBLE : View.GONE);
 
-        AnimatedVectorDrawableCompat avd = AnimatedVectorDrawableCompat.create(this, R.drawable.logo_loading_vector);
+        AnimatedVectorDrawableCompat avd = AnimatedVectorDrawableCompat.create(this, R.drawable.logo_loading_vector_white);
         mProgressView.setImageDrawable(avd);
         final Animatable animatable = (Animatable) mProgressView.getDrawable();
         animatable.start();

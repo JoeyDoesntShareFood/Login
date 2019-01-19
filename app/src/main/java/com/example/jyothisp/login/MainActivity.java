@@ -1,7 +1,9 @@
 package com.example.jyothisp.login;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -22,6 +24,8 @@ import com.google.firebase.database.ValueEventListener;
 public class MainActivity extends AppCompatActivity {
 
     private static final String LOG_TAG = "Blah";
+    private static final String MY_PREFS_NAME = "pref";
+    private static final String UID_KEY = "uid";
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthStateListener;
     private static final int RC_SIGN_IN = 1;
@@ -41,7 +45,7 @@ public class MainActivity extends AppCompatActivity {
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 final FirebaseUser user = firebaseAuth.getCurrentUser();
 
-                if (user == null){
+                if (user == null) {
                     Intent signInIntent = new Intent(MainActivity.this, LoginActivity.class);
                     startActivityForResult(signInIntent, RC_SIGN_IN);
                 }
@@ -60,26 +64,6 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    /**
-     * code to delete the user in case of any pproblems with the registration
-     * @param mAuth
-     */
-    private void deleteUser(FirebaseAuth mAuth){
-        FirebaseUser user = mAuth.getCurrentUser();
-        Toast.makeText(MainActivity.this, "Your registration met with an error.", Toast.LENGTH_SHORT).show();
-        user.delete()
-                .addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        if (task.isSuccessful()){
-                            Toast.makeText(MainActivity.this, "Please register again.", Toast.LENGTH_SHORT).show();
-
-                        }
-                    }
-                });
-        mAuth.signOut();
-    }
-
     @Override
     protected void onResume() {
         super.onResume();
@@ -89,6 +73,24 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        mAuth.addAuthStateListener(mAuthStateListener);
+        mAuth.removeAuthStateListener(mAuthStateListener);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == RC_SIGN_IN) {
+            if (resultCode == RESULT_CANCELED)
+                finish();
+            if (resultCode == RESULT_OK){
+                String uid = mAuth.getUid();
+                SharedPreferences.Editor editor = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE).edit();
+                editor.putString(UID_KEY, uid);
+                editor.apply();
+                Log.e(LOG_TAG, "UID: " + uid);
+            }
+        }
+
     }
 }
